@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Histori Stok - Es Teh Paus Ciracas</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <aside>
+      <h2>Admin Panel</h2>
+      <nav>
+        <a href="admin-dashboard.html">
+          <i class="fas fa-gauge"></i> Dashboard
+        </a>
+        <a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a>
+        <a href="#" class="active"><i class="fas fa-history"></i> Histori</a>
+        <a href="#"><i class="fas fa-file-invoice-dollar"></i> Purchase</a>
+        <a href="#"><i class="fas fa-cash-register"></i> Keuangan</a>
+        <a href="#"><i class="fas fa-users"></i> Karyawan</a>
+        <a href="#"><i class="fas fa-chart-line"></i> Statistik Penjualan</a>
+        <a href="#" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </nav>
+    </aside>
+    <main>
+      <header>
+        <h1>Histori Transaksi Stok</h1>
+        <button class="menu-toggle" aria-label="Open menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </header>
+      <section id="content">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Nama Bahan</th>
+                <th>Jenis</th>
+                <th>Jumlah</th>
+                <th>Stok Awal</th>
+                <th>Stok Akhir</th>
+              </tr>
+            </thead>
+            <tbody id="histori-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <script>
+      const BASE_URL = 'https://manajemen-stok-tehpaus.up.railway.app';
+
+      function logout() {
+        window.location.href = "index.html";
+      }
+
+      const menuToggle = document.querySelector('.menu-toggle');
+      const aside = document.querySelector('aside');
+      const overlay = document.querySelector('.overlay');
+
+      function toggleSidebar() {
+        aside.classList.toggle('open');
+        overlay.classList.toggle('open');
+      }
+
+      if (menuToggle) {
+        menuToggle.addEventListener('click', toggleSidebar);
+      }
+      aside.querySelectorAll('nav a').forEach(item => {
+        item.addEventListener('click', toggleSidebar);
+      });
+
+      async function fetchHistoriData() {
+        try {
+          const [historiResponse, bahanBakuResponse] = await Promise.all([
+            fetch(`${BASE_URL}/api/histori-stok`),
+            fetch(`${BASE_URL}/api/bahan-baku`)
+          ]);
+
+          if (!historiResponse.ok || !bahanBakuResponse.ok) {
+            throw new Error("Gagal fetch data histori atau bahan baku");
+          }
+
+          const histori = await historiResponse.json();
+          const bahanBaku = await bahanBakuResponse.json();
+
+          const tableBody = document.getElementById('histori-table-body');
+          tableBody.innerHTML = '';
+
+          histori.forEach(item => {
+            const row = tableBody.insertRow();
+            const namaBahan = bahanBaku.find(b => b.id === item.id_bahan_baku)?.nama || 'Unknown';
+            const badgeClass = item.perubahan > 0 ? 'masuk' : 'keluar';
+            const jenisText = item.perubahan > 0 ? 'Masuk' : 'Keluar';
+            const jumlahText = item.perubahan > 0 ? `+${item.perubahan}` : item.perubahan;
+
+            row.innerHTML = `
+              <td data-label="Tanggal">${new Date(item.tanggal).toLocaleString('id-ID', {
+                year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+              })}</td>
+              <td data-label="Nama Bahan">${namaBahan}</td>
+              <td data-label="Jenis"><span class="badge ${badgeClass}">${jenisText}</span></td>
+              <td data-label="Jumlah">${jumlahText}</td>
+              <td data-label="Stok Awal">${item.stok_awal}</td>
+              <td data-label="Stok Akhir">${item.stok_akhir}</td>
+            `;
+          });
+
+          if (histori.length === 0) {
+            const row = tableBody.insertRow();
+            const cell = row.insertCell(0);
+            cell.colSpan = 6;
+            cell.textContent = "Belum ada riwayat transaksi stok.";
+            cell.style.textAlign = "center";
+            cell.style.padding = "20px";
+          }
+        } catch (error) {
+          console.error("Error fetching histori data:", error);
+          alert("Gagal memuat data histori. Silakan coba lagi.");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", fetchHistoriData);
+    </script>
+  </body>
+</html>

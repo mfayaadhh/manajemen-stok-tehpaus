@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory - Es Teh Paus Ciracas</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <aside>
+      <h2>Admin Panel</h2>
+      <nav>
+        <a href="admin-dashboard.html">
+          <i class="fas fa-gauge"></i> Dashboard
+        </a>
+        <a href="#" class="active"><i class="fas fa-boxes"></i> Inventory</a>
+        <a href="histori.html"><i class="fas fa-history"></i> Histori</a>
+        <a href="#"><i class="fas fa-file-invoice-dollar"></i> Purchase</a>
+        <a href="#"><i class="fas fa-cash-register"></i> Keuangan</a>
+        <a href="#"><i class="fas fa-users"></i> Karyawan</a>
+        <a href="#"><i class="fas fa-chart-line"></i> Statistik Penjualan</a>
+        <a href="#" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </nav>
+    </aside>
+    <main>
+      <header>
+        <h1>Inventory</h1>
+        <button class="menu-toggle" aria-label="Open menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </header>
+      <section id="content">
+        <div class="toggle-area">
+          <button onclick="toggleForm()">
+            <i id="toggle-icon" class="fas fa-chevron-down"></i> Tambah /
+            Kurangi Stok
+          </button>
+        </div>
+        <form id="form-inventory" style="display:none">
+          <select id="bahan-select" required>
+            <option value="">-- Pilih Bahan --</option>
+          </select>
+          <div id="bahan-baru-fields" style="display:none; flex-direction: column; gap: 1rem; margin: 1rem 0;">
+            <input type="text" id="nama-baru" placeholder="Nama bahan" />
+            <input type="text" id="satuan-baru" placeholder="Satuan" />
+          </div>
+          <input type="number" id="jumlah" placeholder="Jumlah" required min="1" />
+          <select id="jenis">
+            <option value="masuk">Tambah</option>
+            <option value="keluar">Kurangi</option>
+          </select>
+          <button type="submit">Simpan</button>
+        </form>
+
+        <h2>Data Bahan Baku</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Satuan</th>
+                <th>Stok Saat Ini</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <script>
+      const BASE_URL = 'https://manajemen-stok-tehpaus.up.railway.app';
+
+      function logout() {
+        window.location.href = "index.html";
+      }
+
+      const menuToggle = document.querySelector('.menu-toggle');
+      const aside = document.querySelector('aside');
+      const overlay = document.querySelector('.overlay');
+
+      function toggleSidebar() {
+        aside.classList.toggle('open');
+        overlay.classList.toggle('open');
+      }
+
+      if (menuToggle) {
+        menuToggle.addEventListener('click', toggleSidebar);
+      }
+      aside.querySelectorAll('nav a').forEach(item => {
+        item.addEventListener('click', toggleSidebar);
+      });
+
+      function toggleForm() {
+        const form = document.getElementById('form-inventory');
+        const icon = document.getElementById('toggle-icon');
+        const isVisible = form.style.display === 'flex';
+        if (!isVisible) {
+          form.style.display = 'flex';
+          icon.classList.remove('fa-chevron-down');
+          icon.classList.add('fa-chevron-up');
+        } else {
+          form.style.display = 'none';
+          icon.classList.remove('fa-chevron-up');
+          icon.classList.add('fa-chevron-down');
+        }
+      }
+
+      document.getElementById('bahan-select').addEventListener('change', () => {
+        const value = document.getElementById('bahan-select').value;
+        const newFields = document.getElementById('bahan-baru-fields');
+        newFields.style.display = value === '__new' ? 'flex' : 'none';
+      });
+
+      async function fetchInventoryData() {
+        try {
+          const response = await fetch(`${BASE_URL}/api/bahan-baku`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const bahanBaku = await response.json();
+
+          const tableBody = document.getElementById('inventory-table-body');
+          tableBody.innerHTML = '';
+
+          const bahanSelect = document.getElementById('bahan-select');
+          bahanSelect.innerHTML = '<option value="">-- Pilih Bahan --</option>';
+
+          bahanBaku.forEach(item => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+              <td data-label="Nama">${item.nama}</td>
+              <td data-label="Satuan">${item.satuan}</td>
+              <td data-label="Stok Saat Ini">${item.stok_saat_ini}</td>
+            `;
+
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.textContent = item.nama;
+            bahanSelect.appendChild(option);
+          });
+
+          const newOption = document.createElement('option');
+          newOption.value = '__new';
+          newOption.textContent = '+ Tambah Bahan Baru';
+          bahanSelect.appendChild(newOption);
+        } catch (error) {
+          console.error("Error fetching inventory data:", error);
+          alert("Gagal memuat data inventaris. Silakan coba lagi.");
+        }
+      }
+
+      async function handleTransactionSubmit(event) {
+        event.preventDefault();
+
+        const selected = document.getElementById('bahan-select').value;
+        const jumlah = parseInt(document.getElementById('jumlah').value, 10);
+        const jenis_transaksi = document.getElementById('jenis').value;
+
+        if (!selected || isNaN(jumlah) || jumlah <= 0) {
+          alert('Mohon lengkapi semua field dengan benar dan jumlah harus lebih dari 0.');
+          return;
+        }
+
+        if (selected === '__new') {
+          const nama = document.getElementById('nama-baru').value.trim();
+          const satuan = document.getElementById('satuan-baru').value.trim();
+
+          if (!nama || !satuan) {
+            alert('Isi nama dan satuan bahan baru.');
+            return;
+          }
+
+          try {
+            const response = await fetch(`${BASE_URL}/api/bahan-baku`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ nama, satuan, stok_awal: jumlah })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+              alert(`Gagal menambahkan bahan: ${result.error || 'Terjadi kesalahan.'}`);
+              return;
+            }
+
+            alert('Bahan baru berhasil ditambahkan!');
+            document.getElementById('form-inventory').reset();
+            toggleForm();
+            fetchInventoryData();
+          } catch (error) {
+            console.error("Error adding new material:", error);
+            alert("Terjadi kesalahan saat menambahkan bahan baku.");
+          }
+        } else {
+          try {
+            const response = await fetch(`${BASE_URL}/api/transaksi`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id_bahan_baku: parseInt(selected, 10), jenis_transaksi, jumlah })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+              alert(`Transaksi gagal: ${result.error || 'Terjadi kesalahan.'}`);
+              return;
+            }
+
+            alert('Transaksi berhasil diproses!');
+            document.getElementById('form-inventory').reset();
+            toggleForm();
+            fetchInventoryData();
+          } catch (error) {
+            console.error("Error processing transaction:", error);
+            alert("Terjadi kesalahan saat memproses transaksi.");
+          }
+        }
+      }
+
+      document.getElementById('form-inventory').addEventListener('submit', handleTransactionSubmit);
+      document.addEventListener("DOMContentLoaded", fetchInventoryData);
+    </script>
+  </body>
+</html>

@@ -3,224 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Admin - Manajemen Stok</title>
+    <title>Admin Dashboard - Es Teh Paus Ciracas</title>
     <link rel="stylesheet" href="assets/styles.css" />
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-      }
-      .container {
-        max-width: 900px;
-        margin: 40px auto;
-        background-color: #fff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        position: relative;
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 10px;
-      }
-      .logout-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        width: auto;
-      }
-      .logout-btn:hover {
-        background-color: #c82333;
-      }
-      #notifikasi {
-        text-align: center;
-        color: green;
-        font-weight: bold;
-        margin: 10px 0 20px 0;
-      }
-      .menu-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-bottom: 30px;
-      }
-      .menu-buttons button {
-        padding: 10px 20px;
-        border: none;
-        background-color: #007bff;
-        color: white;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 16px;
-      }
-      .menu-buttons button:hover {
-        background-color: #0056b3;
-      }
-      .section {
-        display: none;
-      }
-      section {
-        margin-bottom: 30px;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      table,
-      th,
-      td {
-        border: 1px solid #ddd;
-      }
-      th,
-      td {
-        padding: 10px;
-        text-align: center;
-      }
-      th {
-        background-color: #007bff;
-        color: white;
-      }
-      input,
-      select,
-      button {
-        padding: 10px;
-        margin: 8px 0;
-        width: 100%;
-        box-sizing: border-box;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <div class="container">
-      <button class="logout-btn" onclick="logout()">Logout</button>
-      <h1>Manajemen Stok Es Teh Paus</h1>
-      <p id="notifikasi"></p>
+    <aside>
+      <h2>Admin Panel</h2>
+      <nav>
+        <a href="#" class="active"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a href="inventory.html"><i class="fas fa-boxes"></i> Inventory</a>
+        <a href="histori.html"><i class="fas fa-history"></i> Histori</a>
+        <a href="#"><i class="fas fa-file-invoice-dollar"></i> Purchase</a>
+        <a href="#"><i class="fas fa-cash-register"></i> Keuangan</a>
+        <a href="#"><i class="fas fa-users"></i> Karyawan</a>
+        <a href="#"><i class="fas fa-chart-line"></i> Statistik Penjualan</a>
+        <a href="#" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </nav>
+    </aside>
+    <main>
+      <header>
+        <h1>Dashboard - Es Teh Paus Ciracas</h1>
+        <button class="menu-toggle" aria-label="Open menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </header>
+      <section id="content">
+        <div class="card-grid">
+          <a href="inventory.html" class="card-link">
+            <div class="card">
+              <div class="card-icon"><i class="fas fa-box-open"></i></div>
+              <h3>Kelola Inventory</h3>
+              <p>Tambah atau kurangi stok bahan baku yang tersedia.</p>
+            </div>
+          </a>
+          <a href="histori.html" class="card-link">
+            <div class="card">
+              <div class="card-icon"><i class="fas fa-history"></i></div>
+              <h3>Lihat Histori</h3>
+              <p>Riwayat transaksi masuk dan keluar stok secara terperinci.</p>
+            </div>
+          </a>
+          <a href="#" class="card-link">
+            <div class="card">
+              <div class="card-icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <h3>Purchase</h3>
+              <p>Fitur pemesanan bahan baku (belum tersedia).</p>
+            </div>
+          </a>
+        </div>
+      </section>
+    </main>
 
-      <div class="menu-buttons">
-        <button onclick="tampilkanSection('form')">Tambah / Kurangi Stok</button>
-        <button onclick="tampilkanSection('tabel')">Lihat Data & Histori</button>
-      </div>
-
-      <div id="form" class="section">
-        <section>
-          <h2>Tambah Bahan Baku</h2>
-          <form id="form-bahan">
-            <select id="dropdown-bahan" required>
-              <option value="">-- Pilih Bahan --</option>
-              <option value="__new">+ Bahan Baru</option>
-            </select>
-
-            <input
-              type="text"
-              id="nama"
-              placeholder="Nama Bahan Baku"
-              style="display: none"
-            />
-            <input
-              type="text"
-              id="satuan"
-              placeholder="Satuan"
-              style="display: none"
-            />
-            <input
-              type="number"
-              id="stok_awal"
-              placeholder="Jumlah Stok"
-              required
-            />
-            <button type="submit">Tambah</button>
-          </form>
-        </section>
-
-        <section>
-          <h2>Kurangi Stok Bahan Baku</h2>
-          <form id="form-kurangi">
-            <select id="bahan-select" required></select>
-            <input
-              type="number"
-              id="jumlah-kurang"
-              placeholder="Jumlah Dikurangi"
-              required
-            />
-            <button type="submit">Kurangi</button>
-          </form>
-        </section>
-      </div>
-
-      <div id="tabel" class="section">
-        <section>
-          <h2>Data Bahan Baku</h2>
-          <table id="tabel-bahan">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nama</th>
-                <th>Satuan</th>
-                <th>Stok Awal</th>
-                <th>Stok Saat Ini</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </section>
-
-        <section>
-          <h2>Histori Stok</h2>
-          <table id="tabel-histori">
-            <thead>
-              <tr>
-                <th>ID Bahan Baku</th>
-                <th>Nama Bahan</th>
-                <th>Stok Awal</th>
-                <th>Stok Akhir</th>
-                <th>Perubahan</th>
-                <th>Tanggal</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </section>
-      </div>
-    </div>
+    <div class="overlay" onclick="toggleSidebar()"></div>
 
     <script>
+      const BASE_URL = 'https://manajemen-stok-tehpaus.up.railway.app';
+
       function logout() {
         window.location.href = "index.html";
       }
 
-      function tampilkanSection(id) {
-        document.querySelectorAll(".section").forEach((section) => {
-          section.style.display = "none";
-        });
-        document.getElementById(id).style.display = "block";
+      const menuToggle = document.querySelector('.menu-toggle');
+      const aside = document.querySelector('aside');
+      const overlay = document.querySelector('.overlay');
+
+      function toggleSidebar() {
+        aside.classList.toggle('open');
+        overlay.classList.toggle('open');
       }
 
-      // Tampilkan section form saat halaman pertama dibuka
-      window.onload = () => tampilkanSection("form");
-
-      // Tampilkan input nama dan satuan jika pilih bahan baru
-      document.addEventListener("DOMContentLoaded", function () {
-        const dropdown = document.getElementById("dropdown-bahan");
-        dropdown.addEventListener("change", function () {
-          const isNew = this.value === "__new";
-          document.getElementById("nama").style.display = isNew ? "block" : "none";
-          document.getElementById("satuan").style.display = isNew ? "block" : "none";
-        });
+      if (menuToggle) {
+        menuToggle.addEventListener('click', toggleSidebar);
+      }
+      aside.querySelectorAll('nav a').forEach(item => {
+        item.addEventListener('click', toggleSidebar);
       });
     </script>
-
-    <script src="scripts/admin.js"></script>
-    <div id="toast" class="toast" style="display:none;"></div>
-
   </body>
 </html>

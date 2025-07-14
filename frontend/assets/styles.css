@@ -1,90 +1,364 @@
+/* assets/styles.css */
+
+/* --- Global / Base Styles --- */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f7f9fc;
   margin: 0;
-  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f5f5f5;
+  display: flex; /* Key for sidebar and main content side-by-side */
+  min-height: 100vh; /* Ensure body takes full viewport height */
+  overflow-x: hidden; /* Prevent horizontal scroll when sidebar is off-canvas */
 }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-h1,
-h2 {
-  text-align: center;
-  color: #333;
-}
-
-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-  justify-content: center;
-}
-
-form input,
-form select,
-form button {
-  padding: 10px;
-  font-size: 14px;
-}
-
-form button {
+/* --- Sidebar Styles (Fixed/Off-canvas) --- */
+aside {
+  width: 220px;
   background-color: #007bff;
   color: white;
-  border: none;
-  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: fixed; /* Keep sidebar fixed on desktop */
+  top: 0;
+  left: 0;
+  height: 100%; /* Full height */
+  z-index: 1000; /* Ensure it's on top of other content */
+  transform: translateX(0); /* Default: sidebar is visible on desktop */
+  transition: transform 0.3s ease-in-out; /* For slide-in/out effect on mobile */
+  overflow-y: auto; /* Enable scrolling for long nav lists */
 }
 
-form button:hover {
+aside h2 {
+  text-align: center;
+  font-size: 1.2rem;
+  margin: 1rem 0;
+  color: white;
+}
+
+nav a {
+  padding: 0.75rem 1.5rem;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  transition: background-color 0.3s;
+}
+
+nav a:hover,
+nav a.active {
   background-color: #0056b3;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 8px;
+nav a i {
+  width: 18px; /* Consistent width for icons */
   text-align: center;
 }
 
-th {
-  background-color: #007bff;
-  color: white;
+/* --- Main Content Area --- */
+main {
+  flex: 1; /* Allows main to take up remaining horizontal space */
+  padding: 0; /* Padding handled by child elements (header, section) */
+  display: flex;
+  flex-direction: column; /* Stacks header and section vertically */
+  background-color: #f9f9f9;
+  /* KUNCI PERUBAHAN: Margin-left diterapkan di sini untuk desktop */
+  margin-left: 220px; /* IMPORTANT: This pushes main content to the right of the sidebar */
 }
 
-tr:nth-child(even) {
-  background-color: #f2f2f2;
+/* --- Header in Main Content (Title and Logout button) --- */
+main header {
+  background-color: #ffffff;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between; /* Pushes h1 and logout-btn to opposite ends */
+  align-items: center;
+  margin: 0; /* Remove default margins */
 }
 
-tr:hover {
-  background-color: #f1f1f1;
+main header h1 {
+  margin: 0; /* Remove default margin from h1 */
+  color: #333;
+  font-size: 1.8rem;
 }
 
+/* --- Mobile Menu Toggle Button (Hamburger icon) --- */
+.menu-toggle {
+  display: none; /* Hidden by default on desktop */
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* --- Logout Button (in Main Header) --- */
 .logout-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   background-color: #dc3545;
   color: white;
+  padding: 0.5rem 1rem;
   border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
 }
 
 .logout-btn:hover {
   background-color: #c82333;
 }
 
+/* --- Overlay for mobile menu (appears when sidebar is open) --- */
+.overlay {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 999; /* Below sidebar but above main content */
+}
+
+.overlay.open {
+  display: block;
+}
+
+/* --- Common Section Styles (Content Area below header) --- */
+section {
+  flex-grow: 1; /* Allows section to fill remaining vertical space in main */
+  padding: 1.5rem 2rem; /* Consistent padding for content area */
+}
+
+/* --- Card Grid (for Dashboard) --- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+/* --- Card Styles (for Dashboard) --- */
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+  text-align: center;
+  height: 100%; /* Ensure cards fill grid cell height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+.card:hover {
+  transform: translateY(-4px);
+}
+.card-icon {
+  font-size: 2.4rem;
+  color: #007bff;
+  margin-bottom: 0.75rem;
+}
+.card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: #007bff;
+}
+.card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #555;
+  text-align: center;
+}
+
+/* --- Form Styles (from Inventory) --- */
+.toggle-area {
+  margin-bottom: 1.5rem;
+}
+.toggle-area button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.toggle-area button:hover {
+  background-color: #0056b3;
+}
+/* Specific ID for the inventory form, consider making it a class if used elsewhere */
+#form-inventory {
+  display: none; /* Initially hidden */
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  max-width: 400px;
+  animation: fadeIn 0.4s ease-in-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+form input,
+form select,
+form button { /* General styles for form elements */
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+form button[type="submit"] { /* Specific style for submit button */
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border: none;
+}
+form button[type="submit"]:hover { /* Specific style for submit button hover */
+  background-color: #0056b3;
+}
+
+/* --- Table Styles (from Inventory & Histori) --- */
+.table-container { /* Wrapper for responsive tables */
+    overflow-x: auto; /* Allows horizontal scrolling on small screens */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    margin-top: 1.5rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+th {
+  background-color: #f8f8f8;
+  font-weight: bold;
+  color: #333;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+tbody tr:hover {
+  background-color: #f2f2f2;
+}
+
+/* --- Responsive Adjustments (Mobile First Strategy) --- */
+/* Styles applied to screens with max-width of 768px (tablets and smaller phones) */
+@media (max-width: 768px) {
+  /* Sidebar becomes off-canvas */
+  aside {
+    transform: translateX(-100%); /* Hides sidebar off-screen on mobile ONLY */
+    width: 250px; /* Slightly wider for better touch */
+  }
+  aside.open {
+    transform: translateX(0); /* Slides sidebar into view on mobile */
+  }
+
+  /* Main content adjusts */
+  main {
+    margin-left: 0; /* Remove desktop sidebar margin on mobile */
+    width: 100%; /* Take full width */
+  }
+
+  /* Header adjustments */
+  main header {
+    padding: 1rem; /* Smaller padding */
+  }
+  main header h1 {
+    font-size: 1.5rem; /* Smaller font for title */
+  }
+  .menu-toggle {
+    display: block; /* Show hamburger menu icon */
+  }
+  .logout-btn {
+    display: none; /* Hide main logout button (it's in the sidebar) */
+  }
+
+  /* Section padding adjustment */
+  section {
+    padding: 1rem;
+  }
+
+  /* Card Grid (for Dashboard) adjustments */
+  .card-grid {
+    grid-template-columns: 1fr; /* Stack cards vertically */
+    gap: 1rem; /* Mengatur jarak antar kartu vertikal di mobile */
+  }
+  .card {
+    padding: 1rem;
+    margin-bottom: 0; /* Pastikan tidak ada margin-bottom tambahan yang konflik */
+  }
+
+  /* Table Responsiveness (for Inventory & Histori) */
+  .table-container {
+      background-color: transparent; /* Remove background/shadow for mobile rows */
+      box-shadow: none;
+      margin-top: 1rem; /* Adjust margin */
+  }
+  table {
+      border: none; /* Remove table border */
+      margin-top: 0;
+      box-shadow: none;
+      background-color: transparent;
+  }
+  table thead {
+      border: none;
+  }
+  table thead tr {
+      position: absolute;
+      top: -9999px; /* Hide table header (visually) */
+      left: -9999px;
+  }
+
+  table tr {
+      border: 1px solid #ccc; /* Add border around each "row" block */
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      background-color: white; /* Ensure background for each row block */
+  }
+
+  table td {
+      border: none; /* Remove individual cell borders */
+      position: relative;
+      padding-left: 50%; /* Make space for pseudo-element labels */
+      text-align: right; /* Align actual data to the right */
+  }
+
+  table td:before {
+      /* Create labels for each cell using data-label attribute */
+      content: attr(data-label);
+      position: absolute;
+      left: 10px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      text-align: left; /* Align label to the left */
+      font-weight: bold;
+      color: #555;
+  }
+}
