@@ -1,10 +1,10 @@
-// server.js
 const express = require('express');
 const path = require('path');
 const { Pool } = require('pg');
 const cors = require('cors');
-const app = express();
+require('dotenv').config(); // ← Baca .env di lokal
 
+const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -15,7 +15,9 @@ app.use(express.static(path.join(__dirname, 'frontend')));
 // Database connection
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  ssl: {
+    rejectUnauthorized: false, // ← aman untuk Railway dan Render
+  },
 });
 
 // =====================
@@ -39,7 +41,7 @@ app.post('/api/login', async (req, res) => {
 // =====================
 app.get('/api/bahan-baku', async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM bahan_baku');
+    const result = await db.query('SELECT * FROM bahan_baku WHERE stok_saat_ini > 0');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -72,7 +74,7 @@ app.get('/api/histori-stok', async (req, res) => {
 });
 
 // =====================
-// API: TRANSAKSI MASUK / KELUAR
+// API: TRANSAKSI
 // =====================
 app.post('/api/transaksi', async (req, res) => {
   const { id_bahan_baku, jenis_transaksi, jumlah } = req.body;
@@ -100,6 +102,7 @@ app.post('/api/transaksi', async (req, res) => {
       'INSERT INTO histori_stok (id_bahan_baku, stok_awal, stok_akhir, perubahan) VALUES ($1, $2, $3, $4)',
       [id_bahan_baku, stok_awal, stok_akhir, perubahan]
     );
+
     res.status(201).json({ message: 'Transaksi berhasil diproses' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -107,15 +110,15 @@ app.post('/api/transaksi', async (req, res) => {
 });
 
 // =====================
-// Handle HTML routing fallback
+// SPA HTML Fallback
 // =====================
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
 // =====================
-// Start server
+// Start Server
 // =====================
 app.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:${PORT}`);
+  console.log(`✅ Server berjalan di http://localhost:${PORT}`);
 });
