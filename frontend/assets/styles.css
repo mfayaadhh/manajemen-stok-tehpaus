@@ -1,16 +1,94 @@
 /* assets/styles.css */
 
-/* --- Global / Base Styles --- */
+/* --- GLOBAL HTML/BODY RESET (Common to ALL pages for height/margin) --- */
+html,
 body {
+  height: 100%; /* Pastikan html dan body mengambil tinggi penuh viewport */
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background-color: #f5f5f5;
-  display: flex; /* Key for sidebar and main content side-by-side (on desktop) */
+  padding: 0; /* Pastikan tidak ada padding default */
+  box-sizing: border-box; /* Model kotak yang konsisten */
+  font-family: "Segoe UI", sans-serif; /* Font default untuk semua halaman */
+}
+
+/* --- Login Page Specific Styles (Applied when body has .login-page class) --- */
+body.login-page {
+  /* Target body hanya jika memiliki class 'login-page' */
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center; /* Pusat horizontal */
+  align-items: center; /* Pusat vertikal */
+  overflow-x: hidden; /* Pastikan tidak ada scroll horizontal yang tidak diinginkan */
+  overflow-y: auto; /* Izinkan scroll vertikal jika konten melebihi layar */
+  padding-left: 0 !important; /* KUNCI: Timpa padding-left dari gaya body dashboard */
+}
+
+.login-container {
+  background-color: #ffffff;
+  padding: 30px; /* Padding internal yang cukup */
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  width: 90%; /* Ambil 90% lebar layar */
+  max-width: 400px; /* Batasi lebar maksimum */
+  max-height: 90vh; /* Batasi tinggi maksimum ke 90% viewport height */
+  overflow-y: auto; /* Izinkan scroll jika konten login terlalu panjang */
+  box-sizing: border-box; /* Include padding in width calculation */
+  display: flex; /* Tambahkan flex untuk menata konten internal jika perlu */
+  flex-direction: column; /* Konten di dalam container akan bertumpuk vertikal */
+  justify-content: center; /* Pusatkan konten di dalam container jika tingginya tidak penuh */
+  align-items: center; /* Pusatkan secara horizontal di dalam container */
+}
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Pastikan form mengambil lebar penuh di dalam container */
+  max-width: 300px; /* Batasi lebar form internal */
+}
+.login-container label {
+  margin-bottom: 5px;
+  color: #555;
+  text-align: left; /* Pastikan label rata kiri */
+  width: 100%; /* Ambil lebar penuh */
+}
+.login-container input {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%; /* Pastikan input mengambil lebar penuh */
+  box-sizing: border-box; /* Include padding/border in width */
+}
+.login-container button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.login-container button:hover {
+  background-color: #0056b3;
+}
+.login-container .error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+/* --- Akhir Login Page Specific Styles --- */
+
+/* --- Global / Base Styles (Aplikasi Dashboard) --- */
+/* Gaya body untuk halaman dashboard (hanya jika body TIDAK memiliki class 'login-page') */
+body:not(.login-page) {
+  /* KUNCI PERUBAHAN: Target body yang BUKAN login-page */
+  display: flex; /* Key for sidebar and main content side-by-side */
   min-height: 100vh; /* Ensure body takes full viewport height */
   overflow-x: hidden; /* Prevent horizontal scroll when sidebar is off-canvas */
-
-  /* KUNCI PERUBAHAN: Tambahkan padding-left untuk memberi ruang pada sidebar fixed di desktop */
   padding-left: 220px; /* Lebar sidebar */
+  background-color: #f5f5f5; /* Background color for dashboard pages */
 }
 
 /* --- Sidebar Styles (Fixed/Off-canvas) --- */
@@ -66,8 +144,6 @@ main {
   display: flex;
   flex-direction: column; /* Stacks header and section vertically */
   background-color: #f9f9f9;
-  /* KUNCI PERUBAHAN: Hapus margin-left dari main karena sudah di-handle oleh padding-left body */
-  /* margin-left: 220px; */ /* Ini dihapus karena padding-left body lebih reliable */
 }
 
 /* --- Header in Main Content (Title and Logout button) --- */
@@ -213,6 +289,8 @@ section {
   /* KUNCI PERBAIKAN: Untuk dropdown agar tidak meluap */
   position: relative; /* Penting untuk z-index */
   z-index: 10; /* Pastikan form dan dropdown di atas elemen lain */
+  /* Pastikan form itu sendiri tidak meluap keluar */
+  overflow: hidden; /* Kembali ke hidden untuk form, karena dropdown akan pakai portal/native */
 }
 @keyframes fadeIn {
   from {
@@ -226,19 +304,22 @@ section {
 }
 form input,
 form select,
-form button { /* General styles for form elements */
+form button {
+  /* General styles for form elements */
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
 }
-form button[type="submit"] { /* Specific style for submit button */
+form button[type="submit"] {
+  /* Specific style for submit button */
   background-color: #007bff;
   color: white;
   cursor: pointer;
   border: none;
 }
-form button[type="submit"]:hover { /* Specific style for submit button hover */
+form button[type="submit"]:hover {
+  /* Specific style for submit button hover */
   background-color: #0056b3;
 }
 
@@ -257,44 +338,41 @@ form button[type="submit"]:hover { /* Specific style for submit button hover */
 /* KUNCI PERBAIKAN: Penyesuaian untuk dropdown di mobile */
 form select {
   /* Pastikan select tidak overflow */
-  width: 100%;
-  box-sizing: border-box; /* Pastikan padding dan border termasuk dalam width */
-  max-width: 100%; /* Penting untuk mencegah overflow */
-  /* Tambahan: Pastikan tinggi dan line-height konsisten */
-  height: auto; /* Biarkan tinggi diatur oleh konten atau padding */
-  line-height: 1.5; /* Atur tinggi baris */
-  /* Untuk mengatasi native UI dropdown yang meluap */
-  /* Menggunakan appearance: none; dan custom arrow jika native UI mengganggu */
-  -webkit-appearance: none; /* Hapus gaya native Safari/Chrome */
-  -moz-appearance: none; /* Hapus gaya native Firefox */
-  appearance: none; /* Hapus gaya native */
-  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.9H5.4c-7.3%200-11.4%208.9-6.8%2014.8l141.6%20150.3c3.2%203.4%208.3%203.4%2011.6%200l141.6-150.3c4.7-5.9.5-14.8-6.8-14.8z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+  width: 100% !important; /* !important untuk penimpaan paksa */
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  height: auto !important;
+  line-height: 1.5 !important;
+  /* Kunci untuk mengontrol penampilan dropdown native */
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  /* Custom arrow (jika appearance:none berhasil) */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.9H5.4c-7.3%200-11.4%208.9-6.8%2014.8l141.6%20150.3c3.2%203.4%208.3%203.4%2011.6%200l141.6-150.3c4.7-5.9.5-14.8-6.8-14.8z%22%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
-  background-position: right .7em top 50%, 0 0;
-  background-size: .65em auto, 100%;
+  background-position: right 0.7em top 50%, 0 0;
+  background-size: 0.65em auto, 100%;
+  padding-right: 2em !important; /* Ruang untuk panah kustom */
 }
 
 /* Gaya untuk opsi dropdown (mungkin perlu disesuaikan browser-specific) */
 form select option {
-  white-space: normal; /* Izinkan teks memecah baris jika terlalu panjang */
-  overflow-wrap: break-word; /* Pastikan kata panjang tidak overflow */
+  white-space: normal;
+  overflow-wrap: break-word;
   max-width: 100%;
   box-sizing: border-box;
 }
 
-/* KUNCI PERBAIKAN: Tambahkan overflow visible pada parent form untuk dropdown */
-#form-inventory {
-  overflow: visible; /* Pastikan dropdown tidak terpotong oleh overflow hidden */
-}
-
-
 /* --- Table Styles (from Inventory & Histori) --- */
-.table-container { /* Wrapper for responsive tables */
-    /* overflow-x: auto; ini sudah ada dan akan digunakan kembali */
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-    margin-top: 1.5rem;
+.table-container {
+  /* Wrapper for responsive tables */
+  /* Tetap background dan shadow jika diinginkan untuk tampilan 'card' di sekitar tabel geser */
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  margin-top: 1.5rem;
+  overflow-x: auto; /* KUNCI UTAMA: Membuat tabel bisa digeser */
+  -webkit-overflow-scrolling: touch; /* Untuk scrolling yang lebih halus di iOS */
 }
 table {
   width: 100%;
@@ -305,6 +383,10 @@ td {
   padding: 0.75rem;
   text-align: left;
   border-bottom: 1px solid #eee;
+  /* Memastikan teks tidak terpotong dalam sel */
+  white-space: nowrap; /* Teks dalam sel akan tetap dalam satu baris */
+  overflow: hidden; /* Sembunyikan teks yang meluap */
+  text-overflow: ellipsis; /* Tambahkan elipsis (...) jika teks terpotong */
 }
 th {
   background-color: #f8f8f8;
@@ -373,61 +455,60 @@ tbody tr:hover {
 
   /* KUNCI PERUBAHAN: Gaya tabel responsif untuk mobile (membuatnya bisa digeser) */
   .table-container {
-      /* Tetap background dan shadow jika diinginkan untuk tampilan 'card' di sekitar tabel geser */
-      background-color: white;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-      margin-top: 1rem; /* Adjust margin */
-      overflow-x: auto; /* KUNCI UTAMA: Membuat tabel bisa digeser */
-      -webkit-overflow-scrolling: touch; /* Untuk scrolling yang lebih halus di iOS */
+    /* Tetap background dan shadow jika diinginkan untuk tampilan 'card' di sekitar tabel geser */
+    background-color: white;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    margin-top: 1rem; /* Adjust margin */
+    overflow-x: auto; /* KUNCI UTAMA: Membuat tabel bisa digeser */
+    -webkit-overflow-scrolling: touch; /* Untuk scrolling yang lebih halus di iOS */
   }
   table {
-      /* Pastikan tabel tidak display:block; di mobile agar bisa digeser */
-      width: 100%; /* Tabel mengambil lebar penuh kontainer geser */
-      min-width: 450px; /* Atur lebar minimum agar tabel memicu scroll jika melebihi viewport */
-      border-collapse: collapse;
-      margin-top: 0;
-      box-shadow: none; /* Hapus shadow di sini agar tidak dobel */
-      background-color: transparent;
+    /* Pastikan tabel tidak display:block; di mobile agar bisa digeser */
+    width: 100%; /* Tabel mengambil lebar penuh kontainer geser */
+    min-width: 500px; /* Atur lebar minimum agar tabel memicu scroll jika melebihi viewport */
+    border-collapse: collapse;
+    margin-top: 0;
+    box-shadow: none; /* Hapus shadow di sini agar tidak dobel */
+    background-color: transparent;
   }
   table thead {
-      /* Tetap terlihat */
-      border: none;
+    /* Tetap terlihat */
+    border: none;
   }
   table thead tr {
-      /* Tetap terlihat */
-      position: static; /* Reset from absolute */
-      top: auto;
-      left: auto;
+    /* Tetap terlihat */
+    position: static; /* Reset from absolute */
+    top: auto;
+    left: auto;
   }
 
   table tr {
-      /* Reset dari display:block */
-      display: table-row; /* Kembali ke tampilan baris tabel standar */
-      border: none; /* Hapus border card-like */
-      margin-bottom: 0; /* Hapus margin card-like */
-      border-radius: 0;
-      box-shadow: none;
-      background-color: transparent;
+    /* Reset dari display:block */
+    display: table-row; /* Kembali ke tampilan baris tabel standar */
+    border: none; /* Hapus border card-like */
+    margin-bottom: 0; /* Hapus margin card-like */
+    border-radius: 0;
+    box-shadow: none;
+    background-color: transparent;
   }
 
   table td {
-      border-bottom: 1px solid #eee; /* Kembali ke border bawah TD */
-      position: static; /* Reset dari relative */
-      padding-left: 0.75rem; /* Kembali ke padding standar */
-      text-align: left; /* Kembali ke text-align standar */
-      display: table-cell; /* Kembali ke tampilan sel tabel standar */
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
+    border-bottom: 1px solid #eee; /* Kembali ke border bawah TD */
+    position: static; /* Reset dari relative */
+    padding-left: 0.75rem; /* Kembali ke padding standar */
+    text-align: left; /* Kembali ke text-align standar */
+    display: table-cell; /* Kembali ke tampilan sel tabel standar */
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
   }
 
   table td:last-child {
-      border-bottom: none; /* Hapus border bawah pada TD terakhir */
+    border-bottom: none; /* Hapus border bawah pada TD terakhir */
   }
 
   table td:before {
-      /* Sembunyikan label data-label */
-      content: "";
-      display: none; /* Sembunyikan label yang dibuat dengan pseudo-element */
+    /* Sembunyikan label data-label */
+    content: "";
+    display: none; /* Sembunyikan label yang dibuat dengan pseudo-element */
   }
 }
-
