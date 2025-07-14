@@ -1,4 +1,4 @@
-// admin.js
+// admin.js (fetch URL sudah disesuaikan untuk deployment)
 
 // Fungsi notifikasi
 const tampilkanNotifikasi = (pesan) => {
@@ -12,7 +12,7 @@ const tampilkanNotifikasi = (pesan) => {
 
 // Ambil Data Bahan Baku
 const loadDataBahan = async () => {
-  const response = await fetch("http://localhost:3000/bahan-baku");
+  const response = await fetch("/api/bahan-baku");
   const data = await response.json();
   const tableBody = document.querySelector("#tabel-bahan tbody");
   tableBody.innerHTML = "";
@@ -35,7 +35,7 @@ const loadDataBahan = async () => {
 
 // Ambil Data Histori Stok
 const loadHistoriStok = async () => {
-  const response = await fetch("http://localhost:3000/histori-stok");
+  const response = await fetch("/api/histori-stok");
   const data = await response.json();
   const tableBody = document.querySelector("#tabel-histori tbody");
   tableBody.innerHTML = "";
@@ -44,7 +44,7 @@ const loadHistoriStok = async () => {
     const row = `
       <tr>
         <td>${item.id_bahan_baku}</td>
-        <td>${item.nama}</td>
+        <td>${item.nama || '-'}</td>
         <td>${item.stok_awal}</td>
         <td>${item.stok_akhir}</td>
         <td>${item.perubahan > 0 ? '+' + item.perubahan : item.perubahan}</td>
@@ -70,7 +70,6 @@ formTambah.addEventListener("submit", async (e) => {
 
   try {
     if (dropdownValue === "__new") {
-      // Tambah bahan baru
       const nama = document.getElementById("nama").value.trim();
       const satuan = document.getElementById("satuan").value.trim();
 
@@ -79,7 +78,7 @@ formTambah.addEventListener("submit", async (e) => {
         return;
       }
 
-      const response = await fetch("http://localhost:3000/bahan-baku", {
+      const response = await fetch("/api/bahan-baku", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nama, satuan, stok_awal }),
@@ -88,8 +87,7 @@ formTambah.addEventListener("submit", async (e) => {
       const result = await response.json();
       tampilkanNotifikasi(result.message || "Bahan baru berhasil ditambahkan.");
     } else {
-      // Tambah stok ke bahan lama
-      const response = await fetch("http://localhost:3000/transaksi", {
+      const response = await fetch("/api/transaksi", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -133,7 +131,7 @@ formKurangi.addEventListener("submit", async (e) => {
   if (!konfirmasi) return;
 
   try {
-    const response = await fetch("http://localhost:3000/transaksi", {
+    const response = await fetch("/api/transaksi", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -164,7 +162,7 @@ formKurangi.addEventListener("submit", async (e) => {
 
 // Isi Dropdown Kurangi
 const isiDropdownBahan = async () => {
-  const response = await fetch("http://localhost:3000/bahan-baku");
+  const response = await fetch("/api/bahan-baku");
   const data = await response.json();
   const dropdown = document.getElementById("bahan-select");
   dropdown.innerHTML = "";
@@ -177,9 +175,9 @@ const isiDropdownBahan = async () => {
   });
 };
 
-// Isi Dropdown Tambah (dengan bahan baru)
+// Isi Dropdown Tambah
 const isiDropdownBahanBaru = async () => {
-  const response = await fetch("http://localhost:3000/bahan-baku");
+  const response = await fetch("/api/bahan-baku");
   const data = await response.json();
   const dropdown = document.getElementById("dropdown-bahan");
 
@@ -204,7 +202,7 @@ document.getElementById("dropdown-bahan").addEventListener("change", (e) => {
   document.getElementById("satuan").style.display = isNew ? "block" : "none";
 });
 
-// Inisialisasi
+// Inisialisasi awal
 loadDataBahan();
 loadHistoriStok();
 isiDropdownBahan();
