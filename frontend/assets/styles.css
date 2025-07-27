@@ -46,14 +46,14 @@ body.login-page { /* Tambahkan class 'login-page' pada body di index.html */
 }
 .login-container button {
   padding: 10px;
-  background-color: #007bff;
+  background-color: #56663D;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 .login-container button:hover {
-  background-color: #0056b3;
+  background-color: #9DB17C;
 }
 .login-container .error {
   color: red;
@@ -84,7 +84,7 @@ body {
 /* --- Sidebar Styles (Fixed/Off-canvas) */
 aside {
   width: 220px;
-  background-color: #007bff;
+  background-color: #9DB17C;
   color: white;
   display: flex;
   flex-direction: column;
@@ -103,12 +103,12 @@ aside h2 {
   text-align: center;
   font-size: 1.2rem;
   margin: 1rem 0;
-  color: white;
+  color: #262D1B;
 }
 
 nav a {
   padding: 0.75rem 1.5rem;
-  color: white;
+  color: #262D1B;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -119,7 +119,7 @@ nav a {
 
 nav a:hover,
 nav a.active {
-  background-color: #0056b3;
+  background-color: #DDE4D2;
 }
 
 nav a i {
@@ -236,13 +236,13 @@ section {
 }
 .card-icon {
   font-size: 2.4rem;
-  color: #007bff;
+  color: #56663D;
   margin-bottom: 0.75rem;
 }
 .card h3 {
   margin: 0 0 0.5rem;
   font-size: 1.1rem;
-  color: #007bff;
+  color: #56663D;
 }
 .card p {
   margin: 0;
@@ -257,7 +257,7 @@ section {
 }
 .toggle-area button {
   padding: 0.5rem 1rem;
-  background-color: #007bff;
+  background-color: #9DB17C;
   color: white;
   border: none;
   border-radius: 6px;
@@ -268,7 +268,7 @@ section {
   gap: 0.5rem;
 }
 .toggle-area button:hover {
-  background-color: #0056b3;
+  background-color: #56663D;
 }
 /* Specific ID for the inventory form, consider making it a class if used elsewhere */
 #form-inventory {
@@ -303,13 +303,13 @@ form button { /* General styles for form elements */
   font-size: 1rem;
 }
 form button[type="submit"] { /* Specific style for submit button */
-  background-color: #007bff;
+  background-color: #9DB17C;
   color: white;
   cursor: pointer;
   border: none;
 }
 form button[type="submit"]:hover { /* Specific style for submit button hover */
-  background-color: #0056b3;
+  background-color: #56663D;
 }
 
 /* Gaya untuk div bahan-baru-fields */
